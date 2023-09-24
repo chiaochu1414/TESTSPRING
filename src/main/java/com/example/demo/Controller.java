@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -19,6 +20,7 @@ public class Controller {
 //TEST PUSH COMPANY BRUNCH 56789
 
 
+    List<Grade>studentList= new ArrayList<>();
     List<User> users = new ArrayList<User>(){{
         add(new User("LILI",18));
         add(new User("DEVIN",30));
@@ -50,21 +52,35 @@ public class Controller {
         ObjectMapper json = new ObjectMapper();
 
         String jsonString = "";
-        List<User> jsontoList = new ArrayList<>();
+        //List<User> jsontoList = new ArrayList<>();
 
-        String jsontoListString="[{\"name\":\"LILI\",\"age\":18},{\"name\":\"DEVIN\",\"age\":30}]";
+       // String jsontoListString="[{\"name\":\"LILI\",\"age\":18},{\"name\":\"DEVIN\",\"age\":30}]";
         try {
             jsonString = json.writeValueAsString(users);
-            jsontoList=json.readValue(jsontoListString, new TypeReference<List<User>>(){});
-            //WjsontoList.stream().sorted(Comparator.comparing(User::).reversed());
+            //jsontoList=json.readValue(jsontoListString, new TypeReference<List<User>>(){});
+            users.sort((u1,u2)->u2.age.compareTo(u1.age));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return jsontoList;
+        return users;
     }
 
+
+    @GetMapping("/SumList")
+    public Map<String,Integer>SumList(){
+
+        studentList.add(new Grade("COCO","A",90));
+        studentList.add(new Grade("AMY","B",80));
+        studentList.add(new Grade("BEN","A",67));
+        studentList.add(new Grade("PIG","B",50));
+
+        Map<String,Integer>newList=studentList.stream()
+                .collect(Collectors.groupingBy(x->x.Group,Collectors.summingInt(x->x.Grade)));
+        return newList;
+
+    }
 
     @PostMapping("/AddUser")
     public String AddUser(@RequestBody User u){
