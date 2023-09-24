@@ -2,11 +2,13 @@ package com.example.demo;
 
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.Optional;
 
-
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +22,7 @@ public class Controller {
     List<User> users = new ArrayList<User>(){{
         add(new User("LILI",18));
         add(new User("DEVIN",30));
+        add(new User("BBBB",7));
     }};
 
     @GetMapping("/GetUsers")
@@ -40,6 +43,27 @@ public class Controller {
         return  "年齡:"+resultList;
     }
 
+
+    @GetMapping("/GetList")
+    public List<User> GetList(){
+
+        ObjectMapper json = new ObjectMapper();
+
+        String jsonString = "";
+        List<User> jsontoList = new ArrayList<>();
+
+        String jsontoListString="[{\"name\":\"LILI\",\"age\":18},{\"name\":\"DEVIN\",\"age\":30}]";
+        try {
+            jsonString = json.writeValueAsString(users);
+            jsontoList=json.readValue(jsontoListString, new TypeReference<List<User>>(){});
+            //WjsontoList.stream().sorted(Comparator.comparing(User::).reversed());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return jsontoList;
+    }
 
 
     @PostMapping("/AddUser")
